@@ -204,7 +204,6 @@ input:focus {
 
 button {
     cursor: pointer;
-
     border: 0;
 }
 
@@ -230,7 +229,6 @@ button {
 
 table {
     width: 100%;
-
     border-collapse: collapse;
 }
 
@@ -254,7 +252,6 @@ td {
 
 code {
     color: #91aaff;
-
     font-size: 12px;
 }
 
@@ -398,7 +395,9 @@ code {
 
     header {
         align-items: flex-start;
+
         flex-direction: column;
+
         gap: 15px;
     }
 }
