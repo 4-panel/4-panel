@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>Users - VPN Panel</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<aside class="sidebar">
+
+    <div class="logo">
+        VPN<span>Panel</span>
+    </div>
+
+
+    <nav>
+
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a class="active">
+            Users
+        </a>
+
+        <a>
+            Plans
+        </a>
+
+        <a>
+            Nodes
+        </a>
+
+        <a>
+            Settings
+        </a>
+
+    </nav>
+
+
+    <a
+        href="/logout"
+        class="logout"
+    >
+        Logout
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+
+<header>
+
+    <div>
+
+        <h1>
+            Users
+        </h1>
+
+        <p>
+            Manage your VPN accounts
+        </p>
+
+    </div>
+
+
+    <div class="online">
+
+        <span></span>
+
+        System Online
+
+    </div>
+
+</header>
+
+
+<section class="panel">
+
+
+    <div class="panel-title">
+
+        <div>
+
+            <h2>
+                Create User
+            </h2>
+
+            <p>
+                Add a new VPN account
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <form
+        method="post"
+        action="/users/create"
+        class="create-form"
+    >
+
+        <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
+        >
+
+
+        <input
+            type="text"
+            name="expires"
+            placeholder="Expiration e.g. 2026-12-31"
+            required
+        >
+
+
+        <input
+            type="number"
+            name="traffic_limit"
+            placeholder="Traffic GB"
+            min="1"
+            required
+        >
+
+
+        <button type="submit">
+            + Create User
+        </button>
+
+    </form>
+
+</section>
+
+
+<section class="panel">
+
+
+    <div class="users-header">
+
+        <div>
+
+            <h2>
+                All Users
+            </h2>
+
+            <p>
+                {{ users|length }} account(s)
+            </p>
+
+        </div>
+
+    </div>
+
+
+    <div class="user-grid">
+
+
+        {% for user in users %}
+
+
+        <div class="user-card">
+
+
+            <div class="user-card-top">
+
+
+                <div class="avatar">
+
+                    {{ user.username[0]|upper }}
+
+                </div>
+
+
+                <div>
+
+                    <h3>
+                        {{ user.username }}
+                    </h3>
+
+                    <span class="user-id">
+
+                        ID #{{ user.id }}
+
+                    </span>
+
+                </div>
+
+
+                {% if user.enabled %}
+
+                <span class="badge active">
+                    Active
+                </span>
+
+                {% else %}
+
+                <span class="badge disabled">
+                    Disabled
+                </span>
+
+                {% endif %}
+
+
+            </div>
+
+
+            <div class="user-info">
+
+
+                <div>
+
+                    <span>
+                        UUID
+                    </span>
+
+                    <code>
+                        {{ user.uuid }}
+                    </code>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Expiration
+                    </span>
+
+                    <strong>
+                        {{ user.expires }}
+                    </strong>
+
+                </div>
+
+
+                <div>
+
+                    <span>
+                        Traffic
+                    </span>
+
+                    <strong>
+                        {{ user.traffic_limit }} GB
+                    </strong>
+
+                </div>
+
+
+            </div>
+
+
+            <div class="user-actions">
+
+
+                <a
+                    class="primary-button"
+                    href="/users/{{ user.id }}/vless"
+                >
+                    VLESS
+                </a>
+
+
+                <a
+                    class="secondary-button"
+                    href="/users/{{ user.id }}/qr"
+                    target="_blank"
+                >
+                    QR
+                </a>
+
+
+                <form
+                    method="post"
+                    action="/users/{{ user.id }}/toggle"
+                >
+
+                    <button
+                        class="secondary-button"
+                        type="submit"
+                    >
+
+                        {% if user.enabled %}
+
+                            Disable
+
+                        {% else %}
+
+                            Enable
+
+                        {% endif %}
+
+                    </button>
+
+                </form>
+
+
+            </div>
+
+
+        </div>
+
+
+        {% else %}
+
+
+        <div class="empty-users">
+
+            No users yet.
+
+        </div>
+
+
+        {% endfor %}
+
+
+    </div>
+
+
+</section>
+
+
+</main>
+
+
+</body>
+
+</html>
