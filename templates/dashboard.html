@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>VPN Panel</title>
+</head>
+
+<body>
+
+<h1>VPN Panel</h1>
+
+<h2>Create User</h2>
+
+<form method="post" action="/users/create">
+
+    <input
+        type="text"
+        name="username"
+        placeholder="Username"
+        required
+    >
+
+    <input
+        type="text"
+        name="expires"
+        placeholder="2026-10-25"
+        required
+    >
+
+    <input
+        type="number"
+        name="traffic_limit"
+        placeholder="Traffic GB"
+        required
+    >
+
+    <button type="submit">
+        Create
+    </button>
+
+</form>
+
+<h2>Users</h2>
+
+<table border="1">
+
+<tr>
+    <th>ID</th>
+    <th>Username</th>
+    <th>UUID</th>
+    <th>Expires</th>
+    <th>Traffic</th>
+    <th>Status</th>
+    <th>Action</th>
+</tr>
+
+{% for user in users %}
+
+<tr>
+
+<td>{{ user.id }}</td>
+<td>{{ user.username }}</td>
+<td>{{ user.uuid }}</td>
+<td>{{ user.expires }}</td>
+<td>{{ user.traffic_limit }} GB</td>
+
+<td>
+{% if user.enabled %}
+🟢 Active
+{% else %}
+🔴 Disabled
+{% endif %}
+</td>
+
+<td>
+<form method="post" action="/users/{{ user.id }}/toggle">
+<button type="submit">
+
+{% if user.enabled %}
+Disable
+{% else %}
+Enable
+{% endif %}
+
+</button>
+</form>
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>
