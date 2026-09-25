@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>VLESS - {{ user.username }}</title>
+
+    <link
+        rel="stylesheet"
+        href="/static/style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<aside class="sidebar">
+
+    <div class="logo">
+        VPN<span>Panel</span>
+    </div>
+
+
+    <nav>
+
+        <a href="/">
+            Dashboard
+        </a>
+
+        <a href="/users" class="active">
+            Users
+        </a>
+
+        <a>
+            Plans
+        </a>
+
+        <a>
+            Nodes
+        </a>
+
+        <a>
+            Settings
+        </a>
+
+    </nav>
+
+
+    <a
+        href="/logout"
+        class="logout"
+    >
+        Logout
+    </a>
+
+</aside>
+
+
+<main class="main">
+
+
+<header>
+
+    <div>
+
+        <h1>
+            VLESS Configuration
+        </h1>
+
+        <p>
+            {{ user.username }}
+        </p>
+
+    </div>
+
+</header>
+
+
+<section class="vless-panel">
+
+
+    <div class="qr-box">
+
+        <img
+            src="/users/{{ user.id }}/qr"
+            alt="VLESS QR Code"
+        >
+
+        <p>
+            Scan this QR code with your VPN client
+        </p>
+
+    </div>
+
+
+    <div class="config-box">
+
+
+        <h2>
+            VLESS Link
+        </h2>
+
+
+        <textarea
+            id="vlessLink"
+            readonly
+        >{{ vless_link }}</textarea>
+
+
+        <button
+            class="copy-button"
+            onclick="copyVless()"
+        >
+            Copy VLESS Link
+        </button>
+
+
+        <a
+            class="back-button"
+            href="/users"
+        >
+            ← Back to Users
+        </a>
+
+
+    </div>
+
+
+</section>
+
+
+</main>
+
+
+<script>
+
+function copyVless() {
+
+    const text =
+        document.getElementById(
+            "vlessLink"
+        ).value;
+
+    navigator.clipboard.writeText(text);
+
+    const button =
+        document.querySelector(
+            ".copy-button"
+        );
+
+    button.innerText =
+        "Copied ✓";
+
+    setTimeout(
+        function() {
+
+            button.innerText =
+                "Copy VLESS Link";
+
+        },
+        1500
+    );
+}
+
+</script>
+
+
+</body>
+
+</html>
