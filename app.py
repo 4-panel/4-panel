@@ -1,3 +1,4 @@
+```python
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -39,18 +40,17 @@ templates = Jinja2Templates(
 
 
 # =========================
-# PASSWORD
+# PASSWORD HASH
 # =========================
 
 def hash_password(password):
-
     return hashlib.sha256(
         password.encode()
     ).hexdigest()
 
 
 # =========================
-# ADMIN
+# CREATE ADMIN
 # =========================
 
 def create_admin_if_missing():
@@ -323,7 +323,7 @@ def create_user(
 
 
 # =========================
-# ENABLE / DISABLE
+# ENABLE / DISABLE USER
 # =========================
 
 @app.post(
@@ -531,3 +531,4 @@ def qr_code(
     finally:
 
         db.close()
+```
