@@ -1,4 +1,3 @@
-```python
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import HTMLResponse, RedirectResponse, StreamingResponse
 from fastapi.templating import Jinja2Templates
@@ -531,4 +530,3 @@ def qr_code(
     finally:
 
         db.close()
-```
