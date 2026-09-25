@@ -673,3 +673,243 @@ code {
     }
 
 }
+/* =========================
+   USERS PAGE
+========================= */
+
+.users-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 25px;
+}
+
+.user-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+    gap: 18px;
+}
+
+.user-card {
+    background: #080c13;
+    border: 1px solid #1c2735;
+    border-radius: 16px;
+    padding: 20px;
+}
+
+.user-card-top {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 22px;
+}
+
+.avatar {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #17233b;
+    color: #7ea2ff;
+    border-radius: 12px;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.user-card h3 {
+    margin: 0 0 4px 0;
+}
+
+.user-id {
+    color: #687588;
+    font-size: 12px;
+}
+
+.user-card-top .badge {
+    margin-left: auto;
+}
+
+.user-info {
+    display: grid;
+    gap: 13px;
+    padding: 16px 0;
+    border-top: 1px solid #18212d;
+    border-bottom: 1px solid #18212d;
+}
+
+.user-info div {
+    display: flex;
+    justify-content: space-between;
+    gap: 15px;
+}
+
+.user-info span {
+    color: #697588;
+}
+
+.user-info strong {
+    color: #dce3ed;
+}
+
+.user-info code {
+    max-width: 220px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.user-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.user-actions form {
+    flex: 1;
+}
+
+.primary-button,
+.secondary-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 8px 13px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.primary-button {
+    flex: 1;
+    background: #5b8cff;
+    color: white;
+}
+
+.primary-button:hover {
+    background: #4778ed;
+}
+
+.secondary-button {
+    width: 100%;
+    background: #151e2b;
+    color: #d8e0ec;
+    border: 1px solid #222e3e;
+}
+
+.secondary-button:hover {
+    background: #1b2737;
+}
+
+.empty-users {
+    text-align: center;
+    padding: 60px;
+    color: #697588;
+}
+
+
+/* =========================
+   VLESS PAGE
+========================= */
+
+.vless-panel {
+    display: grid;
+    grid-template-columns: 350px 1fr;
+    gap: 25px;
+    background: #0c111a;
+    border: 1px solid #1b2532;
+    border-radius: 18px;
+    padding: 30px;
+}
+
+.qr-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: #080c13;
+    border: 1px solid #1d2836;
+    border-radius: 15px;
+    padding: 25px;
+}
+
+.qr-box img {
+    width: 260px;
+    height: 260px;
+    background: white;
+    padding: 10px;
+    border-radius: 10px;
+}
+
+.qr-box p {
+    color: #718093;
+    text-align: center;
+    font-size: 13px;
+    margin-bottom: 0;
+}
+
+.config-box {
+    display: flex;
+    flex-direction: column;
+}
+
+.config-box h2 {
+    margin-top: 0;
+}
+
+.config-box textarea {
+    width: 100%;
+    min-height: 130px;
+    resize: vertical;
+    background: #080c13;
+    color: #91aaff;
+    border: 1px solid #202b39;
+    border-radius: 10px;
+    padding: 15px;
+    font-family: monospace;
+    font-size: 13px;
+    outline: none;
+    margin-bottom: 15px;
+}
+
+.copy-button {
+    background: #5b8cff;
+    color: white;
+    padding: 13px;
+    border-radius: 9px;
+    font-weight: bold;
+}
+
+.copy-button:hover {
+    background: #4778ed;
+}
+
+.back-button {
+    margin-top: 12px;
+    text-align: center;
+    padding: 12px;
+    border-radius: 9px;
+    background: #151e2b;
+    color: #c7d0de;
+    text-decoration: none;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media (max-width: 800px) {
+
+    .vless-panel {
+        grid-template-columns: 1fr;
+    }
+
+    .user-grid {
+        grid-template-columns: 1fr;
+    }
+
+}
