@@ -20,13 +20,19 @@
 
 </head>
 
+
 <body>
+
 
 <aside class="sidebar">
 
+
     <div class="logo">
+
         VPN<span>Panel</span>
+
     </div>
+
 
     <nav>
 
@@ -52,260 +58,367 @@
 
     </nav>
 
-    <a href="/logout" class="logout">
+
+    <a
+        href="/logout"
+        class="logout"
+    >
+
         Logout
+
     </a>
+
 
 </aside>
 
 
 <main class="main">
 
-    <header>
+
+<header>
+
+
+    <div>
+
+        <h1>
+            Dashboard
+        </h1>
+
+        <p>
+            Manage your VPN service
+        </p>
+
+    </div>
+
+
+    <div class="online">
+
+        <span></span>
+
+        System Online
+
+    </div>
+
+
+</header>
+
+
+<section class="stats">
+
+
+    <div class="stat">
+
+        <p>
+            Total Users
+        </p>
+
+        <strong>
+
+            {{ users|length }}
+
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <p>
+            Active Users
+        </p>
+
+        <strong>
+
+            {{ users
+            |selectattr("enabled")
+            |list
+            |length }}
+
+        </strong>
+
+    </div>
+
+
+    <div class="stat">
+
+        <p>
+            Disabled Users
+        </p>
+
+        <strong>
+
+            {{ users
+            |rejectattr("enabled")
+            |list
+            |length }}
+
+        </strong>
+
+    </div>
+
+
+</section>
+
+
+<section class="panel">
+
+
+    <div class="panel-title">
 
         <div>
 
-            <h1>Dashboard</h1>
+            <h2>
+                Create User
+            </h2>
 
             <p>
-                Manage your VPN service
+                Create a new VPN account
             </p>
 
         </div>
 
-        <div class="online">
-            <span></span>
-            System Online
-        </div>
-
-    </header>
+    </div>
 
 
-    <section class="stats">
-
-        <div class="stat">
-
-            <p>Total Users</p>
-
-            <strong>
-                {{ users|length }}
-            </strong>
-
-        </div>
+    <form
+        method="post"
+        action="/users/create"
+        class="create-form"
+    >
 
 
-        <div class="stat">
-
-            <p>Active Users</p>
-
-            <strong>
-                {{ users|selectattr("enabled")|list|length }}
-            </strong>
-
-        </div>
-
-
-        <div class="stat">
-
-            <p>Disabled Users</p>
-
-            <strong>
-                {{ users|rejectattr("enabled")|list|length }}
-            </strong>
-
-        </div>
-
-    </section>
-
-
-    <section class="panel">
-
-        <div class="panel-title">
-
-            <div>
-
-                <h2>Create User</h2>
-
-                <p>
-                    Create a new VPN account
-                </p>
-
-            </div>
-
-        </div>
-
-
-        <form
-            method="post"
-            action="/users/create"
-            class="create-form"
+        <input
+            type="text"
+            name="username"
+            placeholder="Username"
+            required
         >
 
-            <input
-                type="text"
-                name="username"
-                placeholder="Username"
-                required
-            >
 
-            <input
-                type="text"
-                name="expires"
-                placeholder="Expiration"
-                required
-            >
-
-            <input
-                type="number"
-                name="traffic_limit"
-                placeholder="Traffic GB"
-                min="1"
-                required
-            >
-
-            <button type="submit">
-                + Create User
-            </button>
-
-        </form>
-
-    </section>
+        <input
+            type="text"
+            name="expires"
+            placeholder="Expiration"
+            required
+        >
 
 
-    <section class="panel">
+        <input
+            type="number"
+            name="traffic_limit"
+            placeholder="Traffic GB"
+            min="1"
+            required
+        >
 
-        <div class="panel-title">
 
-            <div>
+        <button type="submit">
 
-                <h2>Users</h2>
+            + Create User
 
-                <p>
-                    Manage VPN accounts
-                </p>
+        </button>
 
-            </div>
+
+    </form>
+
+
+</section>
+
+
+<section class="panel">
+
+
+    <div class="panel-title">
+
+        <div>
+
+            <h2>
+                Users
+            </h2>
+
+            <p>
+                Manage VPN accounts
+            </p>
 
         </div>
 
-
-        <div class="table-container">
-
-            <table>
-
-                <thead>
-
-                <tr>
-
-                    <th>ID</th>
-                    <th>Username</th>
-                    <th>UUID</th>
-                    <th>Expiration</th>
-                    <th>Traffic</th>
-                    <th>Status</th>
-                    <th>Action</th>
-
-                </tr>
-
-                </thead>
+    </div>
 
 
-                <tbody>
+    <div class="table-container">
 
-                {% for user in users %}
 
-                <tr>
+        <table>
 
-                    <td>
-                        #{{ user.id }}
-                    </td>
 
-                    <td>
-                        <b>{{ user.username }}</b>
-                    </td>
+            <thead>
 
-                    <td>
-                        <code>
-                            {{ user.uuid }}
-                        </code>
-                    </td>
+            <tr>
 
-                    <td>
-                        {{ user.expires }}
-                    </td>
+                <th>ID</th>
 
-                    <td>
-                        {{ user.traffic_limit }} GB
-                    </td>
+                <th>Username</th>
 
-                    <td>
+                <th>UUID</th>
 
-                        {% if user.enabled %}
+                <th>Expiration</th>
 
-                        <span class="badge active">
-                            Active
-                        </span>
+                <th>Traffic</th>
 
-                        {% else %}
+                <th>Status</th>
 
-                        <span class="badge disabled">
-                            Disabled
-                        </span>
+                <th>Action</th>
 
-                        {% endif %}
+            </tr>
 
-                    </td>
+            </thead>
 
-                    <td>
 
-                        <form
-                            method="post"
-                            action="/users/{{ user.id }}/toggle"
+            <tbody>
+
+
+            {% for user in users %}
+
+
+            <tr>
+
+
+                <td>
+
+                    #{{ user.id }}
+
+                </td>
+
+
+                <td>
+
+                    <b>
+                        {{ user.username }}
+                    </b>
+
+                </td>
+
+
+                <td>
+
+                    <code>
+
+                        {{ user.uuid }}
+
+                    </code>
+
+                </td>
+
+
+                <td>
+
+                    {{ user.expires }}
+
+                </td>
+
+
+                <td>
+
+                    {{ user.traffic_limit }} GB
+
+                </td>
+
+
+                <td>
+
+
+                    {% if user.enabled %}
+
+                    <span class="badge active">
+
+                        Active
+
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge disabled">
+
+                        Disabled
+
+                    </span>
+
+                    {% endif %}
+
+
+                </td>
+
+
+                <td>
+
+
+                    <form
+                        method="post"
+                        action="/users/{{ user.id }}/toggle"
+                    >
+
+
+                        <button
+                            class="small-button"
+                            type="submit"
                         >
 
-                            <button
-                                class="small-button"
-                                type="submit"
-                            >
+                            {% if user.enabled %}
 
-                                {% if user.enabled %}
-                                    Disable
-                                {% else %}
-                                    Enable
-                                {% endif %}
+                                Disable
 
-                            </button>
+                            {% else %}
 
-                        </form>
+                                Enable
 
-                    </td>
+                            {% endif %}
 
-                </tr>
+                        </button>
 
-                {% else %}
 
-                <tr>
+                    </form>
 
-                    <td
-                        colspan="7"
-                        class="empty"
-                    >
-                        No users yet.
-                    </td>
 
-                </tr>
+                </td>
 
-                {% endfor %}
 
-                </tbody>
+            </tr>
 
-            </table>
 
-        </div>
+            {% else %}
 
-    </section>
+
+            <tr>
+
+                <td
+                    colspan="7"
+                    class="empty"
+                >
+
+                    No users yet.
+
+                </td>
+
+            </tr>
+
+
+            {% endfor %}
+
+
+            </tbody>
+
+
+        </table>
+
+
+    </div>
+
+
+</section>
+
 
 </main>
+
 
 </body>
 
