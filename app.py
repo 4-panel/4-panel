@@ -5,13 +5,17 @@ from starlette.middleware.sessions import SessionMiddleware
 
 from database import SessionLocal, User, Admin
 
-from passlib.context import CryptContext
-
+import hashlib
 import uuid
 import os
 
 
 app = FastAPI()
+
+
+# -------------------------
+# SESSION
+# -------------------------
 
 app.add_middleware(
     SessionMiddleware,
@@ -21,57 +25,100 @@ app.add_middleware(
     )
 )
 
+
+# -------------------------
+# TEMPLATES
+# -------------------------
+
 templates = Jinja2Templates(
     directory="templates"
 )
 
-pwd_context = CryptContext(
-    schemes=["bcrypt"],
-    deprecated="auto"
-)
 
+# -------------------------
+# PASSWORD HASH
+# -------------------------
+
+def hash_password(password):
+
+    return hashlib.sha256(
+        password.encode()
+    ).hexdigest()
+
+
+# -------------------------
+# CREATE ADMIN
+# -------------------------
 
 def create_admin_if_missing():
 
     db = SessionLocal()
 
-    admin = db.query(Admin).first()
+    try:
 
-    if not admin:
+        admin = db.query(
+            Admin
+        ).first()
 
-        username = os.getenv(
-            "ADMIN_USERNAME",
-            "admin"
-        )
+        if not admin:
 
-        password = os.getenv(
-            "ADMIN_PASSWORD",
-            "admin123"
-        )
+            username = os.getenv(
+                "ADMIN_USERNAME",
+                "admin"
+            )
 
-        admin = Admin(
-            username=username,
-            password_hash=pwd_context.hash(password)
-        )
+            password = os.getenv(
+                "ADMIN_PASSWORD",
+                "admin123"
+            )
 
-        db.add(admin)
-        db.commit()
+            new_admin = Admin(
+                username=username,
+                password_hash=hash_password(
+                    password
+                )
+            )
 
-    db.close()
+            db.add(new_admin)
+
+            db.commit()
+
+    finally:
+
+        db.close()
 
 
 create_admin_if_missing()
 
 
+# -------------------------
+# LOGIN CHECK
+# -------------------------
+
 def logged_in(request: Request):
 
-    return request.session.get("admin_id") is not None
+    return (
+        request.session.get(
+            "admin_id"
+        )
+        is not None
+    )
 
 
-@app.get("/login", response_class=HTMLResponse)
-def login_page(request: Request):
+# -------------------------
+# LOGIN PAGE
+# -------------------------
+
+@app.get(
+    "/login",
+    response_class=HTMLResponse
+)
+def login_page(
+    request: Request
+):
 
     if logged_in(request):
+
         return RedirectResponse(
             "/",
             status_code=303
@@ -83,49 +130,78 @@ def login_page(request: Request):
     )
 
 
+# -------------------------
+# LOGIN
+# -------------------------
+
 @app.post("/login")
 def login(
+
     request: Request,
+
     username: str = Form(...),
+
     password: str = Form(...)
 ):
 
     db = SessionLocal()
 
-    admin = (
-        db.query(Admin)
-        .filter(Admin.username == username)
-        .first()
-    )
+    try:
 
-    if not admin or not pwd_context.verify(
-        password,
-        admin.password_hash
-    ):
+        admin = (
+            db.query(Admin)
+            .filter(
+                Admin.username == username
+            )
+            .first()
+        )
+
+        password_hash = hash_password(
+            password
+        )
+
+        if (
+            not admin
+            or password_hash
+            != admin.password_hash
+        ):
+
+            return templates.TemplateResponse(
+
+                request=request,
+
+                name="login.html",
+
+                context={
+                    "error":
+                    "Invalid username or password"
+                },
+
+                status_code=401
+            )
+
+        request.session[
+            "admin_id"
+        ] = admin.id
+
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+    finally:
 
         db.close()
 
-        return templates.TemplateResponse(
-            request=request,
-            name="login.html",
-            context={
-                "error": "Invalid username or password"
-            },
-            status_code=401
-        )
 
-    request.session["admin_id"] = admin.id
-
-    db.close()
-
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
-
+# -------------------------
+# LOGOUT
+# -------------------------
 
 @app.get("/logout")
-def logout(request: Request):
+def logout(
+    request: Request
+):
 
     request.session.clear()
 
@@ -135,10 +211,20 @@ def logout(request: Request):
     )
 
 
-@app.get("/", response_class=HTMLResponse)
-def dashboard(request: Request):
+# -------------------------
+# DASHBOARD
+# -------------------------
+
+@app.get(
+    "/",
+    response_class=HTMLResponse
+)
+def dashboard(
+    request: Request
+):
 
     if not logged_in(request):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -146,28 +232,46 @@ def dashboard(request: Request):
 
     db = SessionLocal()
 
-    users = db.query(User).all()
+    try:
 
-    db.close()
+        users = db.query(
+            User
+        ).all()
 
-    return templates.TemplateResponse(
-        request=request,
-        name="dashboard.html",
-        context={
-            "users": users
-        }
-    )
+        return templates.TemplateResponse(
 
+            request=request,
+
+            name="dashboard.html",
+
+            context={
+                "users": users
+            }
+        )
+
+    finally:
+
+        db.close()
+
+
+# -------------------------
+# CREATE USER
+# -------------------------
 
 @app.post("/users/create")
 def create_user(
+
     request: Request,
+
     username: str = Form(...),
+
     expires: str = Form(...),
+
     traffic_limit: int = Form(...)
 ):
 
     if not logged_in(request):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -175,47 +279,68 @@ def create_user(
 
     db = SessionLocal()
 
-    existing = (
-        db.query(User)
-        .filter(User.username == username)
-        .first()
-    )
+    try:
 
-    if existing:
+        existing = (
+            db.query(User)
+            .filter(
+                User.username == username
+            )
+            .first()
+        )
 
-        db.close()
+        if existing:
+
+            return RedirectResponse(
+                "/?error=user_exists",
+                status_code=303
+            )
+
+        new_user = User(
+
+            username=username,
+
+            uuid=str(
+                uuid.uuid4()
+            ),
+
+            expires=expires,
+
+            traffic_limit=traffic_limit,
+
+            enabled=True
+        )
+
+        db.add(new_user)
+
+        db.commit()
 
         return RedirectResponse(
-            "/?error=user_exists",
+            "/",
             status_code=303
         )
 
-    new_user = User(
-        username=username,
-        uuid=str(uuid.uuid4()),
-        expires=expires,
-        traffic_limit=traffic_limit,
-        enabled=True
-    )
+    finally:
 
-    db.add(new_user)
-    db.commit()
-
-    db.close()
-
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
+        db.close()
 
 
-@app.post("/users/{user_id}/toggle")
+# -------------------------
+# ENABLE / DISABLE USER
+# -------------------------
+
+@app.post(
+    "/users/{user_id}/toggle"
+)
 def toggle_user(
+
     request: Request,
+
     user_id: int
 ):
 
     if not logged_in(request):
+
         return RedirectResponse(
             "/login",
             status_code=303
@@ -223,21 +348,29 @@ def toggle_user(
 
     db = SessionLocal()
 
-    user = (
-        db.query(User)
-        .filter(User.id == user_id)
-        .first()
-    )
+    try:
 
-    if user:
+        user = (
+            db.query(User)
+            .filter(
+                User.id == user_id
+            )
+            .first()
+        )
 
-        user.enabled = not user.enabled
+        if user:
 
-        db.commit()
+            user.enabled = (
+                not user.enabled
+            )
 
-    db.close()
+            db.commit()
 
-    return RedirectResponse(
-        "/",
-        status_code=303
-    )
+        return RedirectResponse(
+            "/",
+            status_code=303
+        )
+
+    finally:
+
+        db.close()
