@@ -17,11 +17,9 @@ def dashboard(request: Request):
     db.close()
 
     return templates.TemplateResponse(
-        "dashboard.html",
-        {
-            "request": request,
-            "users": users
-        }
+        request=request,
+        name="dashboard.html",
+        context={"users": users}
     )
 
 
