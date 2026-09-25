@@ -1,95 +1,204 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>VPN Panel</title>
+    <link rel="stylesheet" href="/static/style.css">
 </head>
 
 <body>
 
-<h1>VPN Panel</h1>
+<div class="sidebar">
+    <div class="logo">VPN<span>Panel</span></div>
 
-<h2>Create User</h2>
+    <div class="nav active">Dashboard</div>
+    <div class="nav">Users</div>
+    <div class="nav">Plans</div>
+    <div class="nav">Settings</div>
+</div>
 
-<form method="post" action="/users/create">
+<div class="main">
 
-    <input
-        type="text"
-        name="username"
-        placeholder="Username"
-        required
-    >
+    <div class="topbar">
+        <div>
+            <h1>Dashboard</h1>
+            <p>Manage your VPN users</p>
+        </div>
 
-    <input
-        type="text"
-        name="expires"
-        placeholder="2026-10-25"
-        required
-    >
+        <div class="status">
+            <span></span> System Online
+        </div>
+    </div>
 
-    <input
-        type="number"
-        name="traffic_limit"
-        placeholder="Traffic GB"
-        required
-    >
+    <div class="cards">
 
-    <button type="submit">
-        Create
-    </button>
+        <div class="card">
+            <p>Total Users</p>
+            <h2>{{ users|length }}</h2>
+        </div>
 
-</form>
+        <div class="card">
+            <p>Active Users</p>
+            <h2>
+                {{ users|selectattr("enabled")|list|length }}
+            </h2>
+        </div>
 
-<h2>Users</h2>
+        <div class="card">
+            <p>Disabled Users</p>
+            <h2>
+                {{ users|rejectattr("enabled")|list|length }}
+            </h2>
+        </div>
 
-<table border="1">
+    </div>
 
-<tr>
-    <th>ID</th>
-    <th>Username</th>
-    <th>UUID</th>
-    <th>Expires</th>
-    <th>Traffic</th>
-    <th>Status</th>
-    <th>Action</th>
-</tr>
+    <div class="panel">
 
-{% for user in users %}
+        <div class="panel-header">
+            <div>
+                <h2>Create User</h2>
+                <p>Create a new VPN account</p>
+            </div>
+        </div>
 
-<tr>
+        <form method="post" action="/users/create" class="create-form">
 
-<td>{{ user.id }}</td>
-<td>{{ user.username }}</td>
-<td>{{ user.uuid }}</td>
-<td>{{ user.expires }}</td>
-<td>{{ user.traffic_limit }} GB</td>
+            <input
+                type="text"
+                name="username"
+                placeholder="Username"
+                required
+            >
 
-<td>
-{% if user.enabled %}
-🟢 Active
-{% else %}
-🔴 Disabled
-{% endif %}
-</td>
+            <input
+                type="text"
+                name="expires"
+                placeholder="Expiration (2026-10-25)"
+                required
+            >
 
-<td>
-<form method="post" action="/users/{{ user.id }}/toggle">
-<button type="submit">
+            <input
+                type="number"
+                name="traffic_limit"
+                placeholder="Traffic GB"
+                required
+            >
 
-{% if user.enabled %}
-Disable
-{% else %}
-Enable
-{% endif %}
+            <button type="submit">
+                + Create User
+            </button>
 
-</button>
-</form>
-</td>
+        </form>
 
-</tr>
+    </div>
 
-{% endfor %}
+    <div class="panel">
 
-</table>
+        <div class="panel-header">
+            <div>
+                <h2>Users</h2>
+                <p>Manage VPN accounts</p>
+            </div>
+        </div>
+
+        <div class="table-wrapper">
+
+            <table>
+
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Username</th>
+                        <th>UUID</th>
+                        <th>Expiration</th>
+                        <th>Traffic</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                {% for user in users %}
+
+                    <tr>
+
+                        <td>#{{ user.id }}</td>
+
+                        <td>
+                            <strong>{{ user.username }}</strong>
+                        </td>
+
+                        <td>
+                            <code>{{ user.uuid }}</code>
+                        </td>
+
+                        <td>
+                            {{ user.expires }}
+                        </td>
+
+                        <td>
+                            {{ user.traffic_limit }} GB
+                        </td>
+
+                        <td>
+
+                            {% if user.enabled %}
+                                <span class="badge active-badge">
+                                    Active
+                                </span>
+                            {% else %}
+                                <span class="badge disabled-badge">
+                                    Disabled
+                                </span>
+                            {% endif %}
+
+                        </td>
+
+                        <td>
+
+                            <form
+                                method="post"
+                                action="/users/{{ user.id }}/toggle"
+                            >
+
+                                <button class="action-btn" type="submit">
+
+                                    {% if user.enabled %}
+                                        Disable
+                                    {% else %}
+                                        Enable
+                                    {% endif %}
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                {% else %}
+
+                    <tr>
+                        <td colspan="7" class="empty">
+                            No users yet.
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
 
 </body>
 </html>
